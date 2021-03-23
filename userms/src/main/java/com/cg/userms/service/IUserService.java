@@ -7,4 +7,5 @@ public interface IUserService
     User addUser(String username, String password);
     User findById(Long userId);
     User checkCredentials(String username, String password);
+
 }
