@@ -7,4 +7,6 @@ public interface IUserService
     User addUser(String username, String password);
     User findById(Long userId);
     boolean checkCredentials(String username, String password);
+    
+    //arpit's changes
 }
