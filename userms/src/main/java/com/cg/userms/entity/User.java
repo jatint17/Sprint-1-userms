@@ -11,7 +11,7 @@ public class User
     @GeneratedValue
     @Id
     private Long userId;
-
+    @Column(unique = true)
     private String username;
     private String password;
 
