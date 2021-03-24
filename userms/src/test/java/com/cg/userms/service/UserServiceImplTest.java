@@ -19,6 +19,8 @@ import com.cg.userms.entity.User;
 import com.cg.userms.exceptions.InvalidPasswordException;
 import com.cg.userms.exceptions.InvalidUsernameException;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
+
 @ExtendWith(MockitoExtension.class)
 @Import(UserServiceImpl.class)
 @DataJpaTest
@@ -28,6 +30,7 @@ public class UserServiceImplTest {
 	EntityManager entityManager;
 	@Autowired
 	UserServiceImpl service;
+
 	/*
 	 * user added successfully
 	 */
@@ -37,8 +40,8 @@ public class UserServiceImplTest {
 		String password = "password";
 		User result = service.addUser(username, password);
 		assertNotNull(result);
-		List<User> users = entityManager.createQuery("from User",User.class).getResultList();
-		assertEquals(1,users.size());
+		List<User> users = entityManager.createQuery("from User", User.class).getResultList();
+		assertEquals(1, users.size());
 		User stored = users.get(0);
 		assertEquals(stored.getUserId(), result.getUserId());
 		assertEquals(username, result.getUsername());
@@ -46,6 +49,7 @@ public class UserServiceImplTest {
 		assertEquals(password, result.getPassword());
 		assertEquals(password, stored.getPassword());
 	}
+
 	/*
 	 * username is blank
 	 */
@@ -53,10 +57,10 @@ public class UserServiceImplTest {
 	public void testAddUser_2() {
 		String username = "";
 		String password = "password";
-		Executable executable=()->service.addUser(username, password);
-        assertThrows(InvalidUsernameException.class, executable);
+		Executable executable = () -> service.addUser(username, password);
+		assertThrows(InvalidUsernameException.class, executable);
 	}
-	
+
 	/*
 	 * password is blank
 	 */
@@ -64,10 +68,10 @@ public class UserServiceImplTest {
 	public void testAddUser_3() {
 		String username = "arpit";
 		String password = "";
-		Executable executable=()->service.addUser(username, password);
+		Executable executable = () -> service.addUser(username, password);
 		assertThrows(InvalidPasswordException.class, executable);
 	}
-	
+
 	/*
 	 * username is null
 	 */
@@ -75,10 +79,10 @@ public class UserServiceImplTest {
 	public void testAddUser_4() {
 		String username = null;
 		String password = "password";
-		Executable executable=()->service.addUser(username, password);
-        assertThrows(InvalidUsernameException.class, executable);
+		Executable executable = () -> service.addUser(username, password);
+		assertThrows(InvalidUsernameException.class, executable);
 	}
-	
+
 	/*
 	 * password is blank
 	 */
@@ -86,7 +90,7 @@ public class UserServiceImplTest {
 	public void testAddUser_5() {
 		String username = "arpit";
 		String password = null;
-		Executable executable=()->service.addUser(username, password);
+		Executable executable = () -> service.addUser(username, password);
 		assertThrows(InvalidPasswordException.class, executable);
 	}
 }
