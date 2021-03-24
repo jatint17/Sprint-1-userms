@@ -1,9 +1,21 @@
 package com.cg.userms.service;
 
 import com.cg.userms.entity.User;
+import com.cg.userms.exception.InvalidIdException;
 import com.cg.userms.exception.InvalidPasswordException;
 import com.cg.userms.exception.InvalidUsernameException;
+import com.cg.userms.exception.NullIdException;
+import com.cg.userms.exception.UserNotFoundException;
 import com.cg.userms.repository.IUserRepository;
+
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,69 +33,69 @@ public class UserServiceTest
 
     @Spy
     @InjectMocks
-    IUserService userService;
+    UserServiceImpl userService;
 
+ 
+    
     /**
-     * Scenario: username is empty
-     */
+   * Scenario: userid is negative
+   */
     @Test
-    public void testCheckCredentials_1()
+    public void testFindById_1()
     {
-        Executable executable = ()->userService.checkCredentials("","password");
-        Assertions.assertThrows(InvalidUsernameException.class,executable);
+    	long userid=-1;
+    	doThrow(InvalidIdException.class).when(userService).validateId(userid);
+    	Executable executable=()->userService.findById(userid);
+    	Assertions.assertThrows(InvalidIdException.class, executable);
     }
-
+    
+    
     /**
-     * Scenario: password is empty
-     */
+   * Scenario: userid does not exist in the database
+   */
+    
     @Test
-    public void testCheckCredentials_2()
+    public void testFindById_2()
     {
-        Executable executable = ()->userService.checkCredentials("username","");
-        Assertions.assertThrows(InvalidPasswordException.class,executable);
+    	long userid=100;
+    	doNothing().when(userService).validateId(userid);
+    	User user=mock(User.class);
+    	Optional<User>optional=Optional.empty();
+    
+		when(userRepository.findById(userid)).thenReturn(optional);
+    	Executable executable=()->userService.findById(userid);
+    	Assertions.assertThrows(UserNotFoundException.class,executable);
     }
-
     /**
-     * Scenario: username does not match the database
-     */
-    public void testCheckCredentials_3()
+   * Scenario: userid exist in the database
+   */
+    @Test
+    public void testFindById_3()
     {
-        String username = "username";
-        String password = "password";
-        User user = new User(username,password);
-        userRepository.save(user);
-
-        Executable executable = ()-> userService.checkCredentials("wrong",password);
-        Assertions.assertThrows(InvalidUsernameException.class,executable);
+    	long userid=3;
+    	doNothing().when(userService).validateId(userid);
+    	User user=mock(User.class);
+    	Optional<User>optional =Optional.of(user);
+    	when (userRepository.findById(userid)).thenReturn(optional);
+    	User result=userService.findById(userid);
+    	Assertions.assertEquals(user,result);
+    	verify (userRepository).findById(userid);
     }
+    
+//    /**
+//     * Scenario: userid is null;
+//     */
+//    @Test
+//    public void testFindById_4()
+//    {
+//    
+//		long userid=(Long) null;
+//    	doThrow(NullIdException.class).when(userService).validateId(userid);
+//    	Executable executable=()->userService.findById(userid);
+//    	Assertions.assertThrows(NullIdException.class, executable);
+//    	
+//    }
+   
 
-    /**
-     * Scenario: password does not match the database
-     */
-    public void testCheckCredentials_4()
-    {
-        String username = "username";
-        String password = "password";
-        User user = new User(username,password);
-        userRepository.save(user);
 
-        Executable executable = ()-> userService.checkCredentials(username,"wrong");
-        Assertions.assertThrows(InvalidUsernameException.class,executable);
-    }
-
-    /**
-     * Scenario: credentials are matching
-     */
-    public void testCheckCredentials_5()
-    {
-        String username = "username";
-        String password = "password";
-        User user = new User(username,password);
-        userRepository.save(user);
-
-        User checked = userService.checkCredentials(username,password);
-        Assertions.assertNotNull(checked);
-        Assertions.assertEquals(username,checked.getUsername());
-        Assertions.assertEquals(password,checked.getPassword());
-    }
 }
