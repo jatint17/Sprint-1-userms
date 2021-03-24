@@ -2,6 +2,11 @@ package com.cg.userms.service;
 
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.*;
+import com.cg.userms.entity.User;
+import com.cg.userms.exception.InvalidPasswordException;
+import com.cg.userms.exception.InvalidUsernameException;
+import com.cg.userms.repository.IUserRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
@@ -15,18 +20,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import com.cg.userms.entity.User;
-import com.cg.userms.exceptions.InvalidPasswordException;
-import com.cg.userms.exceptions.InvalidUsernameException;
-import com.cg.userms.repository.IUserRepository;
-
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplUnitTest {
 	@Mock
-	IUserRepository repository;
+	IUserRepository userRepository;
 	@Spy
 	@InjectMocks
-	UserServiceImpl service;
+	UserServiceImpl userService;
 
 	/*
 	 * successfully added user
@@ -37,17 +37,17 @@ public class UserServiceImplUnitTest {
 		String password = "password";
 		User user = Mockito.mock(User.class);
 		User saved = Mockito.mock(User.class);
-		doNothing().when(service).validateUsername(username);
-		doNothing().when(service).validatePassword(password);
-		when(service.checkCredentials(username, password)).thenReturn(false);
-		when(repository.save(any(User.class))).thenReturn(saved);
-		User result = service.addUser(username, password);
+		doNothing().when(userService).validateUsername(username);
+		doNothing().when(userService).validatePassword(password);
+		when(userService.checkCredentials(username, password)).thenReturn(false);
+		when(userRepository.save(any(User.class))).thenReturn(saved);
+		User result = userService.addUser(username, password);
 		assertNotNull(result);
 		assertEquals(saved, result);
-		verify(service).validatePassword(password);
-		verify(service).validateUsername(username);
-		verify(repository).save(any(User.class));
-		verify(service).checkCredentials(username, password);
+		verify(userService).validatePassword(password);
+		verify(userService).validateUsername(username);
+		verify(userRepository).save(any(User.class));
+		verify(userService).checkCredentials(username, password);
 	}
 
 	/*
@@ -57,12 +57,12 @@ public class UserServiceImplUnitTest {
 	public void testAddUser_2() {
 		String username = "";
 		String password = "password";
-		doThrow(InvalidUsernameException.class).when(service).validateUsername(username);
-		when(service.checkCredentials(username, password)).thenReturn(false);
-		Executable executable = () -> service.addUser(username, password);
+		doThrow(InvalidUsernameException.class).when(userService).validateUsername(username);
+		when(userService.checkCredentials(username, password)).thenReturn(false);
+		Executable executable = () -> userService.addUser(username, password);
 		assertThrows(InvalidUsernameException.class, executable);
-		verify(service).validateUsername(username);
-		verify(service).checkCredentials(username, password);
+		verify(userService).validateUsername(username);
+		verify(userService).checkCredentials(username, password);
 	}
 
 	/*
@@ -72,12 +72,12 @@ public class UserServiceImplUnitTest {
 	public void testAddUser_3() {
 		String username = "arpit";
 		String password = "";
-		doThrow(InvalidPasswordException.class).when(service).validatePassword(password);
-		when(service.checkCredentials(username, password)).thenReturn(false);
-		Executable executable = () -> service.addUser(username, password);
+		doThrow(InvalidPasswordException.class).when(userService).validatePassword(password);
+		when(userService.checkCredentials(username, password)).thenReturn(false);
+		Executable executable = () -> userService.addUser(username, password);
 		assertThrows(InvalidPasswordException.class, executable);
-		verify(service).validatePassword(password);
-		verify(service).checkCredentials(username, password);
+		verify(userService).validatePassword(password);
+		verify(userService).checkCredentials(username, password);
 	}
 
 	/*
@@ -87,12 +87,12 @@ public class UserServiceImplUnitTest {
 	public void testAddUser_4() {
 		String username = "arpit";
 		String password = null;
-		doThrow(InvalidPasswordException.class).when(service).validatePassword(password);
-		when(service.checkCredentials(username, password)).thenReturn(false);
-		Executable executable = () -> service.addUser(username, password);
+		doThrow(InvalidPasswordException.class).when(userService).validatePassword(password);
+		when(userService.checkCredentials(username, password)).thenReturn(false);
+		Executable executable = () -> userService.addUser(username, password);
 		assertThrows(InvalidPasswordException.class, executable);
-		verify(service).validatePassword(password);
-		verify(service).checkCredentials(username, password);
+		verify(userService).validatePassword(password);
+		verify(userService).checkCredentials(username, password);
 	}
 
 	/*
@@ -102,12 +102,12 @@ public class UserServiceImplUnitTest {
 	public void testAddUser_5() {
 		String username = null;
 		String password = "password";
-		doThrow(InvalidUsernameException.class).when(service).validateUsername(username);
-		when(service.checkCredentials(username, password)).thenReturn(false);
-		Executable executable = () -> service.addUser(username, password);
+		doThrow(InvalidUsernameException.class).when(userService).validateUsername(username);
+		when(userService.checkCredentials(username, password)).thenReturn(false);
+		Executable executable = () -> userService.addUser(username, password);
 		assertThrows(InvalidUsernameException.class, executable);
-		verify(service).validateUsername(username);
-		verify(service).checkCredentials(username, password);
+		verify(userService).validateUsername(username);
+		verify(userService).checkCredentials(username, password);
 	}
 
 	/*
@@ -116,7 +116,7 @@ public class UserServiceImplUnitTest {
 	@Test
 	public void testValidateUserName_1() {
 		String username = "";
-		Executable executable = () -> service.validateUsername(username);
+		Executable executable = () -> userService.validateUsername(username);
 		assertThrows(InvalidUsernameException.class, executable);
 	}
 
@@ -126,7 +126,7 @@ public class UserServiceImplUnitTest {
 	@Test
 	public void testValidateUserName_2() {
 		String username = null;
-		Executable executable = () -> service.validateUsername(username);
+		Executable executable = () -> userService.validateUsername(username);
 		assertThrows(InvalidUsernameException.class, executable);
 	}
 
@@ -136,7 +136,7 @@ public class UserServiceImplUnitTest {
 	@Test
 	public void testValidateUserName_3() {
 		String username = "arpit";
-		service.validateUsername(username);
+		userService.validateUsername(username);
 	}
 
 	/*
@@ -145,7 +145,7 @@ public class UserServiceImplUnitTest {
 	@Test
 	public void testValidatePassword_1() {
 		String password = "";
-		Executable executable = () -> service.validatePassword(password);
+		Executable executable = () -> userService.validatePassword(password);
 		assertThrows(InvalidPasswordException.class, executable);
 	}
 
@@ -155,7 +155,7 @@ public class UserServiceImplUnitTest {
 	@Test
 	public void testValidatePassword_2() {
 		String password = null;
-		Executable executable = () -> service.validatePassword(password);
+		Executable executable = () -> userService.validatePassword(password);
 		assertThrows(InvalidPasswordException.class, executable);
 	}
 
@@ -165,7 +165,77 @@ public class UserServiceImplUnitTest {
 	@Test
 	public void testValidatePassword_3() {
 		String password = "password";
-		service.validatePassword(password);
+		userService.validatePassword(password);
 	}
 
+    /**
+     * Scenario: username is empty
+     */
+    @Test
+    public void testCheckCredentials_1()
+    {
+        String username="";
+        String password="password";
+        boolean result = userService.checkCredentials(username,password);
+        Assertions.assertFalse(result);
+    }
+
+    /**
+     * Scenario: password is empty
+     */
+    @Test
+    public void testCheckCredentials_2()
+    {
+        String username="username";
+        String password="";
+        boolean result = userService.checkCredentials(username,password);
+        Assertions.assertFalse(result);
+    }
+
+    /**
+     * Scenario: username does not match the database
+     */
+    @Test
+    public void testCheckCredentials_3()
+    {
+        String username = "username";
+        String password = "password";
+        String enteredUsername = "wrong";
+        User user = new User(username,password);
+        Mockito.when(userRepository.findUserByUsername(enteredUsername)).thenReturn(null);
+        boolean result = userService.checkCredentials(enteredUsername,password);
+        Assertions.assertFalse(result);
+        Mockito.verify(userRepository).findUserByUsername(enteredUsername);
+    }
+
+    /**
+     * Scenario: password does not match the database
+     */
+    @Test
+    public void testCheckCredentials_4()
+    {
+        String username = "username";
+        String password = "password";
+        String enteredPassword = "wrong";
+        User user = new User(username,password);
+        Mockito.when(userRepository.findUserByUsername(username)).thenReturn(user);
+        boolean result = userService.checkCredentials(username,enteredPassword);
+        Assertions.assertFalse(result);
+        Mockito.verify(userRepository).findUserByUsername(username);
+    }
+
+    /**
+     * Scenario: credentials are matching
+     */
+    @Test
+    public void testCheckCredentials_5()
+    {
+        String username = "username";
+        String password = "password";
+        User user = new User(username,password);
+        Mockito.when(userRepository.findUserByUsername(username)).thenReturn(user);
+        boolean result = userService.checkCredentials(username,password);
+        Assertions.assertTrue(result);
+        Mockito.verify(userRepository).findUserByUsername(username);
+    }
 }

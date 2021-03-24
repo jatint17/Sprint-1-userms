@@ -1,9 +1,9 @@
 package com.cg.userms.service;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.cg.userms.entity.User;
 import com.cg.userms.exceptions.InvalidPasswordException;
 import com.cg.userms.exceptions.InvalidUsernameException;
@@ -35,9 +35,20 @@ public class UserServiceImpl implements IUserService {
 	}
 
 	@Override
-	public boolean checkCredentials(String username, String password) {
-		return false;
-	}
+    public boolean checkCredentials(String username, String password)
+    {
+        if(username==null||username.isEmpty()||password==null||password.isEmpty())
+        {
+            return false;
+        }
+        User user = userRepository.findUserByUsername(username);
+        if(user==null)
+        {
+            return false;
+        }
+        boolean result = user.getUsername().equals(username) && user.getPassword().equals(password);
+        return result;
+    }
 
 	public void validateUsername(String username) {
 		if (username == null || username.isEmpty() || username.trim().isEmpty()) {
@@ -50,5 +61,4 @@ public class UserServiceImpl implements IUserService {
 			throw new InvalidPasswordException("Password cannot be null or empty");
 		}
 	}
-
 }
