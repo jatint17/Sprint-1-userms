@@ -13,7 +13,7 @@ import com.cg.userms.repository.IUserRepository;
 public class UserServiceImpl implements IUserService {
 
 	@Autowired
-	private IUserRepository repository;
+	private IUserRepository userRepository;
 	
 	@Transactional
 	@Override
@@ -23,7 +23,7 @@ public class UserServiceImpl implements IUserService {
 			validateUsername(username);
 			validatePassword(password);
 			User user = new User(username, password);
-			user = repository.save(user);
+			user = userRepository.save(user);
 			return user;
 		}
 		return null;

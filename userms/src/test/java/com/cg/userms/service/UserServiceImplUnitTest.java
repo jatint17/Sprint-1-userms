@@ -3,10 +3,8 @@ package com.cg.userms.service;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.*;
 import com.cg.userms.entity.User;
-import com.cg.userms.exception.InvalidPasswordException;
-import com.cg.userms.exception.InvalidUsernameException;
+import com.cg.userms.exceptions.*;
 import com.cg.userms.repository.IUserRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
@@ -15,10 +13,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import static org.mockito.Mockito.*;
 import org.mockito.Spy;
-import org.mockito.internal.matchers.Any;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplUnitTest {
@@ -39,7 +35,7 @@ public class UserServiceImplUnitTest {
 		User saved = Mockito.mock(User.class);
 		doNothing().when(userService).validateUsername(username);
 		doNothing().when(userService).validatePassword(password);
-		when(userService.checkCredentials(username, password)).thenReturn(false);
+		doReturn(false).when(userService).checkCredentials(username,password);
 		when(userRepository.save(any(User.class))).thenReturn(saved);
 		User result = userService.addUser(username, password);
 		assertNotNull(result);
