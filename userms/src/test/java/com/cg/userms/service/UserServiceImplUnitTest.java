@@ -1,5 +1,7 @@
 package com.cg.userms.service;
 
+import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 import com.cg.userms.entity.User;
 import com.cg.userms.exception.InvalidPasswordException;
 import com.cg.userms.exception.InvalidUsernameException;
@@ -11,20 +13,160 @@ import org.junit.jupiter.api.function.Executable;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.*;
 import org.mockito.Spy;
+import org.mockito.internal.matchers.Any;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceImplUnitTest
-{
-    @Mock
-    IUserRepository userRepository;
+public class UserServiceImplUnitTest {
+	@Mock
+	IUserRepository userRepository;
+	@Spy
+	@InjectMocks
+	UserServiceImpl userService;
 
-    @Spy
-    @InjectMocks
-    UserServiceImpl userService;
+	/*
+	 * successfully added user
+	 */
+	@Test
+	public void testAddUser_1() {
+		String username = "arpit";
+		String password = "password";
+		User user = Mockito.mock(User.class);
+		User saved = Mockito.mock(User.class);
+		doNothing().when(userService).validateUsername(username);
+		doNothing().when(userService).validatePassword(password);
+		when(userService.checkCredentials(username, password)).thenReturn(false);
+		when(userRepository.save(any(User.class))).thenReturn(saved);
+		User result = userService.addUser(username, password);
+		assertNotNull(result);
+		assertEquals(saved, result);
+		verify(userService).validatePassword(password);
+		verify(userService).validateUsername(username);
+		verify(userRepository).save(any(User.class));
+		verify(userService).checkCredentials(username, password);
+	}
+
+	/*
+	 * empty username
+	 */
+	@Test
+	public void testAddUser_2() {
+		String username = "";
+		String password = "password";
+		doThrow(InvalidUsernameException.class).when(userService).validateUsername(username);
+		when(userService.checkCredentials(username, password)).thenReturn(false);
+		Executable executable = () -> userService.addUser(username, password);
+		assertThrows(InvalidUsernameException.class, executable);
+		verify(userService).validateUsername(username);
+		verify(userService).checkCredentials(username, password);
+	}
+
+	/*
+	 * empty password
+	 */
+	@Test
+	public void testAddUser_3() {
+		String username = "arpit";
+		String password = "";
+		doThrow(InvalidPasswordException.class).when(userService).validatePassword(password);
+		when(userService.checkCredentials(username, password)).thenReturn(false);
+		Executable executable = () -> userService.addUser(username, password);
+		assertThrows(InvalidPasswordException.class, executable);
+		verify(userService).validatePassword(password);
+		verify(userService).checkCredentials(username, password);
+	}
+
+	/*
+	 * password is null
+	 */
+	@Test
+	public void testAddUser_4() {
+		String username = "arpit";
+		String password = null;
+		doThrow(InvalidPasswordException.class).when(userService).validatePassword(password);
+		when(userService.checkCredentials(username, password)).thenReturn(false);
+		Executable executable = () -> userService.addUser(username, password);
+		assertThrows(InvalidPasswordException.class, executable);
+		verify(userService).validatePassword(password);
+		verify(userService).checkCredentials(username, password);
+	}
+
+	/*
+	 * username is null
+	 */
+	@Test
+	public void testAddUser_5() {
+		String username = null;
+		String password = "password";
+		doThrow(InvalidUsernameException.class).when(userService).validateUsername(username);
+		when(userService.checkCredentials(username, password)).thenReturn(false);
+		Executable executable = () -> userService.addUser(username, password);
+		assertThrows(InvalidUsernameException.class, executable);
+		verify(userService).validateUsername(username);
+		verify(userService).checkCredentials(username, password);
+	}
+
+	/*
+	 * empty username as input
+	 */
+	@Test
+	public void testValidateUserName_1() {
+		String username = "";
+		Executable executable = () -> userService.validateUsername(username);
+		assertThrows(InvalidUsernameException.class, executable);
+	}
+
+	/*
+	 * null username as input
+	 */
+	@Test
+	public void testValidateUserName_2() {
+		String username = null;
+		Executable executable = () -> userService.validateUsername(username);
+		assertThrows(InvalidUsernameException.class, executable);
+	}
+
+	/*
+	 * valid username as input
+	 */
+	@Test
+	public void testValidateUserName_3() {
+		String username = "arpit";
+		userService.validateUsername(username);
+	}
+
+	/*
+	 * empty password as input
+	 */
+	@Test
+	public void testValidatePassword_1() {
+		String password = "";
+		Executable executable = () -> userService.validatePassword(password);
+		assertThrows(InvalidPasswordException.class, executable);
+	}
+
+	/*
+	 * null password as input
+	 */
+	@Test
+	public void testValidatePassword_2() {
+		String password = null;
+		Executable executable = () -> userService.validatePassword(password);
+		assertThrows(InvalidPasswordException.class, executable);
+	}
+
+	/*
+	 * valid password as input
+	 */
+	@Test
+	public void testValidatePassword_3() {
+		String password = "password";
+		userService.validatePassword(password);
+	}
 
     /**
      * Scenario: username is empty
