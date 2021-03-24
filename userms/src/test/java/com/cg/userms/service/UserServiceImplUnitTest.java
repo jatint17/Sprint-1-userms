@@ -10,11 +10,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest
+public class UserServiceImplUnitTest
 {
     @Mock
     IUserRepository userRepository;
@@ -29,8 +32,10 @@ public class UserServiceTest
     @Test
     public void testCheckCredentials_1()
     {
-        Executable executable = ()->userService.checkCredentials("","password");
-        Assertions.assertThrows(InvalidUsernameException.class,executable);
+        String username="";
+        String password="password";
+        boolean result = userService.checkCredentials(username,password);
+        Assertions.assertFalse(result);
     }
 
     /**
@@ -39,8 +44,10 @@ public class UserServiceTest
     @Test
     public void testCheckCredentials_2()
     {
-        Executable executable = ()->userService.checkCredentials("username","");
-        Assertions.assertThrows(InvalidPasswordException.class,executable);
+        String username="username";
+        String password="";
+        boolean result = userService.checkCredentials(username,password);
+        Assertions.assertFalse(result);
     }
 
     /**
@@ -51,11 +58,12 @@ public class UserServiceTest
     {
         String username = "username";
         String password = "password";
+        String enteredUsername = "wrong";
         User user = new User(username,password);
-        userRepository.save(user);
-
-        Executable executable = ()-> userService.checkCredentials("wrong",password);
-        Assertions.assertThrows(InvalidUsernameException.class,executable);
+        Mockito.when(userRepository.findUserByUsername(enteredUsername)).thenReturn(null);
+        boolean result = userService.checkCredentials(enteredUsername,password);
+        Assertions.assertFalse(result);
+        Mockito.verify(userRepository).findUserByUsername(enteredUsername);
     }
 
     /**
@@ -66,11 +74,12 @@ public class UserServiceTest
     {
         String username = "username";
         String password = "password";
+        String enteredPassword = "wrong";
         User user = new User(username,password);
-        userRepository.save(user);
-
-        Executable executable = ()-> userService.checkCredentials(username,"wrong");
-        Assertions.assertThrows(InvalidUsernameException.class,executable);
+        Mockito.when(userRepository.findUserByUsername(username)).thenReturn(user);
+        boolean result = userService.checkCredentials(username,enteredPassword);
+        Assertions.assertFalse(result);
+        Mockito.verify(userRepository).findUserByUsername(username);
     }
 
     /**
@@ -82,11 +91,9 @@ public class UserServiceTest
         String username = "username";
         String password = "password";
         User user = new User(username,password);
-        userRepository.save(user);
-
-        User checked = userService.checkCredentials(username,password);
-        Assertions.assertNotNull(checked);
-        Assertions.assertEquals(username,checked.getUsername());
-        Assertions.assertEquals(password,checked.getPassword());
+        Mockito.when(userRepository.findUserByUsername(username)).thenReturn(user);
+        boolean result = userService.checkCredentials(username,password);
+        Assertions.assertTrue(result);
+        Mockito.verify(userRepository).findUserByUsername(username);
     }
 }
