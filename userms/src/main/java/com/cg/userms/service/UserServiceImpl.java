@@ -2,25 +2,31 @@ package com.cg.userms.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cg.userms.entity.User;
 import com.cg.userms.exceptions.InvalidPasswordException;
 import com.cg.userms.exceptions.InvalidUsernameException;
 import com.cg.userms.repository.IUserRepository;
 
+@Service
 public class UserServiceImpl implements IUserService {
 
 	@Autowired
 	private IUserRepository repository;
-
+	
+	@Transactional
 	@Override
 	public User addUser(String username, String password) {
-		validateUsername(username);
-		validatePassword(password);
-		User user = new User(username, password);
-		user.setUserId(1L);
-		user = repository.save(user);
-		return user;
+		boolean checker = checkCredentials(username, password);
+		if (checker == false) {
+			validateUsername(username);
+			validatePassword(password);
+			User user = new User(username, password);
+			user = repository.save(user);
+			return user;
+		}
+		return null;
 	}
 
 	@Override

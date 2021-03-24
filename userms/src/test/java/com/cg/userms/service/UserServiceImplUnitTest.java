@@ -1,13 +1,16 @@
 package com.cg.userms.service;
 
 import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.*;
 import org.mockito.Spy;
+import org.mockito.internal.matchers.Any;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -34,15 +37,17 @@ public class UserServiceImplUnitTest {
 		String password = "password";
 		User user = Mockito.mock(User.class);
 		User saved = Mockito.mock(User.class);
-		Mockito.doNothing().when(service).validateUsername(username);
-		Mockito.doNothing().when(service).validatePassword(password);
-		Mockito.doReturn(saved).when(repository).save(user);
+		doNothing().when(service).validateUsername(username);
+		doNothing().when(service).validatePassword(password);
+		when(service.checkCredentials(username, password)).thenReturn(false);
+		when(repository.save(any(User.class))).thenReturn(saved);
 		User result = service.addUser(username, password);
-		Assertions.assertNotNull(result);
-		Assertions.assertEquals(saved, result);
-		Mockito.verify(service).validatePassword(password);
-		Mockito.verify(service).validateUsername(username);
-		Mockito.verify(repository).save(user);
+		assertNotNull(result);
+		assertEquals(saved, result);
+		verify(service).validatePassword(password);
+		verify(service).validateUsername(username);
+		verify(repository).save(any(User.class));
+		verify(service).checkCredentials(username, password);
 	}
 
 	/*
@@ -52,8 +57,12 @@ public class UserServiceImplUnitTest {
 	public void testAddUser_2() {
 		String username = "";
 		String password = "password";
+		doThrow(InvalidUsernameException.class).when(service).validateUsername(username);
+		when(service.checkCredentials(username, password)).thenReturn(false);
 		Executable executable = () -> service.addUser(username, password);
-		Assertions.assertThrows(InvalidUsernameException.class, executable);
+		assertThrows(InvalidUsernameException.class, executable);
+		verify(service).validateUsername(username);
+		verify(service).checkCredentials(username, password);
 	}
 
 	/*
@@ -63,8 +72,12 @@ public class UserServiceImplUnitTest {
 	public void testAddUser_3() {
 		String username = "arpit";
 		String password = "";
+		doThrow(InvalidPasswordException.class).when(service).validatePassword(password);
+		when(service.checkCredentials(username, password)).thenReturn(false);
 		Executable executable = () -> service.addUser(username, password);
-		Assertions.assertThrows(InvalidPasswordException.class, executable);
+		assertThrows(InvalidPasswordException.class, executable);
+		verify(service).validatePassword(password);
+		verify(service).checkCredentials(username, password);
 	}
 
 	/*
@@ -74,8 +87,12 @@ public class UserServiceImplUnitTest {
 	public void testAddUser_4() {
 		String username = "arpit";
 		String password = null;
+		doThrow(InvalidPasswordException.class).when(service).validatePassword(password);
+		when(service.checkCredentials(username, password)).thenReturn(false);
 		Executable executable = () -> service.addUser(username, password);
-		Assertions.assertThrows(InvalidPasswordException.class, executable);
+		assertThrows(InvalidPasswordException.class, executable);
+		verify(service).validatePassword(password);
+		verify(service).checkCredentials(username, password);
 	}
 
 	/*
@@ -85,15 +102,12 @@ public class UserServiceImplUnitTest {
 	public void testAddUser_5() {
 		String username = null;
 		String password = "password";
+		doThrow(InvalidUsernameException.class).when(service).validateUsername(username);
+		when(service.checkCredentials(username, password)).thenReturn(false);
 		Executable executable = () -> service.addUser(username, password);
-		Assertions.assertThrows(InvalidUsernameException.class, executable);
-	}
-	
-	/*
-	 * username already existing 
-	 */
-	public void testAddUser_6() {
-		
+		assertThrows(InvalidUsernameException.class, executable);
+		verify(service).validateUsername(username);
+		verify(service).checkCredentials(username, password);
 	}
 
 	/*
@@ -103,7 +117,7 @@ public class UserServiceImplUnitTest {
 	public void testValidateUserName_1() {
 		String username = "";
 		Executable executable = () -> service.validateUsername(username);
-		Assertions.assertThrows(InvalidUsernameException.class, executable);
+		assertThrows(InvalidUsernameException.class, executable);
 	}
 
 	/*
@@ -113,7 +127,7 @@ public class UserServiceImplUnitTest {
 	public void testValidateUserName_2() {
 		String username = null;
 		Executable executable = () -> service.validateUsername(username);
-		Assertions.assertThrows(InvalidUsernameException.class, executable);
+		assertThrows(InvalidUsernameException.class, executable);
 	}
 
 	/*
@@ -132,7 +146,7 @@ public class UserServiceImplUnitTest {
 	public void testValidatePassword_1() {
 		String password = "";
 		Executable executable = () -> service.validatePassword(password);
-		Assertions.assertThrows(InvalidPasswordException.class, executable);
+		assertThrows(InvalidPasswordException.class, executable);
 	}
 
 	/*
@@ -142,7 +156,7 @@ public class UserServiceImplUnitTest {
 	public void testValidatePassword_2() {
 		String password = null;
 		Executable executable = () -> service.validatePassword(password);
-		Assertions.assertThrows(InvalidPasswordException.class, executable);
+		assertThrows(InvalidPasswordException.class, executable);
 	}
 
 	/*
