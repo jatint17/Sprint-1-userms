@@ -1,6 +1,8 @@
 package com.cg.userms.service;
 
 
+import com.cg.userms.exceptions.InvalidIdException;
+import com.cg.userms.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +10,8 @@ import com.cg.userms.entity.User;
 import com.cg.userms.exceptions.InvalidPasswordException;
 import com.cg.userms.exceptions.InvalidUsernameException;
 import com.cg.userms.repository.IUserRepository;
+
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements IUserService {
@@ -30,8 +34,16 @@ public class UserServiceImpl implements IUserService {
 	}
 
 	@Override
-	public User findById(Long userId) {
-		return null;
+	public User findById(Long userId)
+	{
+		validateId(userId);
+		Optional<User> optional = userRepository.findById(userId);
+		if(!optional.isPresent())
+		{
+			throw new UserNotFoundException("User not found");
+		}
+		User user =optional.get();
+		return user;
 	}
 
 	@Override
@@ -59,6 +71,13 @@ public class UserServiceImpl implements IUserService {
 	public void validatePassword(String password) {
 		if (password == null || password.isEmpty() || password.trim().isEmpty()) {
 			throw new InvalidPasswordException("Password cannot be null or empty");
+		}
+	}
+	public void validateId (long userId)
+	{
+		if(userId<0)
+		{
+			throw new InvalidIdException("Invalid id");
 		}
 	}
 }
