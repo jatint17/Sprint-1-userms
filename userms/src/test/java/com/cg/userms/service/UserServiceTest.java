@@ -21,7 +21,7 @@ public class UserServiceTest
 
     @Spy
     @InjectMocks
-    IUserService userService;
+    UserServiceImpl userService;
 
     /**
      * Scenario: username is empty
@@ -46,6 +46,7 @@ public class UserServiceTest
     /**
      * Scenario: username does not match the database
      */
+    @Test
     public void testCheckCredentials_3()
     {
         String username = "username";
@@ -60,6 +61,7 @@ public class UserServiceTest
     /**
      * Scenario: password does not match the database
      */
+    @Test
     public void testCheckCredentials_4()
     {
         String username = "username";
@@ -74,6 +76,7 @@ public class UserServiceTest
     /**
      * Scenario: credentials are matching
      */
+    @Test
     public void testCheckCredentials_5()
     {
         String username = "username";
