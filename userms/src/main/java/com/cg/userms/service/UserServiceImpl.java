@@ -1,6 +1,7 @@
 package com.cg.userms.service;
 
 
+import com.cg.userms.exceptions.AddUserException;
 import com.cg.userms.exceptions.InvalidIdException;
 import com.cg.userms.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +23,15 @@ public class UserServiceImpl implements IUserService {
 	@Transactional
 	@Override
 	public User addUser(String username, String password) {
-		boolean checker = checkCredentials(username, password);
-		if (checker == false) {
-			validateUsername(username);
-			validatePassword(password);
-			User user = new User(username, password);
-			user = userRepository.save(user);
-			return user;
+		validateUsername(username);
+		validatePassword(password);
+		User user = userRepository.findUserByUsername(username);
+		if (user!=null) {
+			throw new AddUserException("Username already exists");
 		}
-		return null;
+		User created = new User(username, password);
+		created = userRepository.save(created);
+		return created;
 	}
 
 	@Override
