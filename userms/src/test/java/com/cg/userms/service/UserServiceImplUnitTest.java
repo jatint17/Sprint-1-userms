@@ -15,6 +15,8 @@ import static org.mockito.Mockito.*;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplUnitTest {
@@ -234,4 +236,49 @@ public class UserServiceImplUnitTest {
         Assertions.assertTrue(result);
         Mockito.verify(userRepository).findUserByUsername(username);
     }
+
+	/**
+	 * Scenario: userid is negative
+	 */
+	@Test
+	public void testFindById_1()
+	{
+		long userid=-1;
+		doThrow(InvalidIdException.class).when(userService).validateId(userid);
+		Executable executable=()->userService.findById(userid);
+		Assertions.assertThrows(InvalidIdException.class, executable);
+	}
+
+
+	/**
+	 * Scenario: userid does not exist in the database
+	 */
+
+	@Test
+	public void testFindById_2()
+	{
+		long userid=100;
+		doNothing().when(userService).validateId(userid);
+		User user=mock(User.class);
+		Optional<User>optional=Optional.empty();
+
+		when(userRepository.findById(userid)).thenReturn(optional);
+		Executable executable=()->userService.findById(userid);
+		Assertions.assertThrows(UserNotFoundException.class,executable);
+	}
+	/**
+	 * Scenario: userid exist in the database
+	 */
+	@Test
+	public void testFindById_3()
+	{
+		long userid=3;
+		doNothing().when(userService).validateId(userid);
+		User user=mock(User.class);
+		Optional<User>optional = Optional.of(user);
+		when (userRepository.findById(userid)).thenReturn(optional);
+		User result=userService.findById(userid);
+		Assertions.assertEquals(user,result);
+		verify (userRepository).findById(userid);
+	}
 }
