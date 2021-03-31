@@ -113,10 +113,10 @@ public class UserRestControllerUnitTest
 
     
     /**
-	 * Scenario: User added successfully
-	 * input: object of CreateUserRequest class and stubbing the following methods-
+	 * Scenario: Admin added successfully
+	 * input: object of AddRequest class and stubbing the following methods-
      * 		UserServiceImpl# addUser(username, password, set of roles), UserUtil# toUserDetails(user)
-     * expectation: verifying if all stubbed methods have been called and user is added successfully
+     * expectation: verifying if all stubbed methods have been called and admin is added successfully
 	 */
 	@Test
 	public void testAddAdmin_1() {
@@ -137,8 +137,8 @@ public class UserRestControllerUnitTest
 	}
 	
 	/**
-	 * Scenario: User not added successfully due to username validation failure
-	 * input: object of CreateUserRequest class and stubbing the following methods- 
+	 * Scenario: Admin not added successfully due to username validation failure
+	 * input: object of AddRequest class and stubbing the following methods- 
 	 * 			UserServiceImpl# addUser(blank username, password, roles)
 	 * expectation: verifying if InvalidUsernameException is thrown
 	 */
@@ -157,8 +157,8 @@ public class UserRestControllerUnitTest
 	}
 	
 	/**
-	 * Scenario: user not added successfully because blank password provided
-	 * input: object of CreateUserRequest class and stubbing the following methods- 
+	 * Scenario: Admin not added successfully because blank password provided
+	 * input: object of AddRequest class and stubbing the following methods- 
 	 * 			UserServiceImpl# addUser(username, blank password, roles)
 	 * expectation: verifying if InvalidPasswordException is thrown
 	 */
@@ -177,8 +177,8 @@ public class UserRestControllerUnitTest
 	}
 	
 	/**
-	 * Scenario: user not added successfully because null username provided
-	 * input: object of CreateUserRequest class and stubbing the following methods- 
+	 * Scenario: Admin not added successfully because null username provided
+	 * input: object of AddRequest class and stubbing the following methods- 
 	 * 			UserServiceImpl# addUser(null username, password, roles)
 	 * expectation: verifying if InvalidUsernameException is thrown
 	 */
@@ -197,8 +197,8 @@ public class UserRestControllerUnitTest
 	}
 	
 	/**
-	 * Scenario: user not added successfully because null password provided
-	 * input: object of CreateUserRequest class and stubbing the following methods- 
+	 * Scenario: Admin not added successfully because null password provided
+	 * input: object of AddRequest class and stubbing the following methods- 
 	 * 			UserServiceImpl# addUser(username, null password, roles)
 	 * expectation: verifying if InvalidPasswordException is thrown
 	 */
@@ -217,8 +217,8 @@ public class UserRestControllerUnitTest
 	}
 	
 	/**
-	 * Scenario: user not added successfully because username already exists
-	 * input: object of CreateUserRequest class and stubbing the following methods- 
+	 * Scenario: Admin not added successfully because username already exists
+	 * input: object of AddRequest class and stubbing the following methods- 
 	 * 			UserServiceImpl# addUser(username, password, roles)
 	 * expectation: verifying if AddUserException is thrown
 	 */
