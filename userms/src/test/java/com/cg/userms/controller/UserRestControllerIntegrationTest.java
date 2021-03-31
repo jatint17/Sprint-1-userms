@@ -1,5 +1,7 @@
 package com.cg.userms.controller;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,10 +11,15 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import com.cg.userms.dto.AddRequest;
 import com.cg.userms.dto.CheckCredentialsRequest;
 import com.cg.userms.dto.UserDetailsResponse;
 import com.cg.userms.entity.User;
+import com.cg.userms.exceptions.AddUserException;
 import com.cg.userms.exceptions.InvalidIdException;
+import com.cg.userms.exceptions.InvalidPasswordException;
+import com.cg.userms.exceptions.InvalidUsernameException;
 import com.cg.userms.exceptions.UserNotFoundException;
 import com.cg.userms.service.UserServiceImpl;
 import com.cg.userms.util.UserUtil;
@@ -118,4 +125,94 @@ public class UserRestControllerIntegrationTest
     	Executable executable=()-> userController.findById(userId);
     	Assertions.assertThrows(UserNotFoundException.class,executable);
    }
+    
+    /**
+     * Scenario: Admin added sucessfully
+     * input: object of AddRequest
+     * expection: added username and password are the same as the one entered
+     */
+    @Test
+    public void testAddAdmin_1() {
+    	String username = "username";
+    	String password = "password";
+    	AddRequest request = new AddRequest(username, password);
+    	UserDetailsResponse response = userController.addAdmin(request);
+    	assertEquals(username,response.getUsername());
+    	assertEquals(password, response.getPassword());
+    }
+    
+    /**
+     * Scenario: Admin not added sucessfully because blank username is provided
+     * input: object of AddRequest
+     * expection: verifying if InvalidUsernameException is thrown
+     */
+    @Test
+    public void testAddAdmin_2() {
+    	String username = "";
+    	String password = "password";
+    	AddRequest request = new AddRequest(username, password);
+    	Executable executable = () -> userController.addAdmin(request);
+    	assertThrows(InvalidUsernameException.class, executable);
+    }
+    
+    /**
+     * Scenario: Admin not added sucessfully because blank password is provided
+     * input: object of AddRequest
+     * expection: verifying if InvalidPasswordException is thrown
+     */
+    @Test
+    public void testAddAdmin_3() {
+    	String username = "username";
+    	String password = "";
+    	AddRequest request = new AddRequest(username, password);
+    	Executable executable = () -> userController.addAdmin(request);
+    	assertThrows(InvalidPasswordException.class, executable);
+    }
+    
+    /**
+     * Scenario: Admin not added sucessfully because null username is provided
+     * input: object of AddRequest
+     * expection: verifying if InvalidUsernameException is thrown
+     */
+    @Test
+    public void testAddAdmin_4() {
+    	String username = null;
+    	String password = "password";
+    	AddRequest request = new AddRequest(username, password);
+    	Executable executable = () -> userController.addAdmin(request);
+    	assertThrows(InvalidUsernameException.class, executable);
+    }
+    
+    /**
+     * Scenario: Admin not added sucessfully because null password is provided
+     * input: object of AddRequest
+     * expection: verifying if InvalidPasswordException is thrown
+     */
+    @Test
+    public void testAddAdmin_5() {
+    	String username = "username";
+    	String password = null;
+    	AddRequest request = new AddRequest(username, password);
+    	Executable executable = () -> userController.addAdmin(request);
+    	assertThrows(InvalidPasswordException.class, executable);
+    }
+    
+    /**
+     * Scenario: Admin not added sucessfully because username already exists
+     * input: object of AddRequest and EntityManage#persist(user)
+     * expection: verifying if AddUserException is thrown
+     */
+    @Test
+    public void testAddAdmin_6() {
+    	String username = "username";
+    	String password = "password";
+    	Set<String> roles = new HashSet<>();
+        roles.add("admin");
+    	AddRequest request = new AddRequest(username, password);
+    	User user = new User(username, password, roles);
+    	entityManager.persist(user);
+    	Executable executable = () -> userController.addAdmin(request);
+    	assertThrows(AddUserException.class, executable);
+    }
+    
 }

@@ -35,7 +35,8 @@ public class UserServiceImplUnitTest
     /**
      * Scenario: user added successfully
      * input: username, password and set of roles and stubbing the following methods-
-     * 		UserServiceImpl# validateUsername(username),UserServiceImpl# validatePassword(password), IUserrepository# findUserByUsername(username), IUserrepository# save(user)
+     * 		UserServiceImpl# validateUsername(username),UserServiceImpl# validatePassword(password), 
+     * 		IUserrepository# findUserByUsername(username), IUserrepository# save(user)
      * expectation: verifying if all stubbed methods have been called and user is added successfully
      */
     @Test
@@ -139,7 +140,8 @@ public class UserServiceImplUnitTest
     /**
      * Scenario: user not added successfully because username already exists
      * input: existing valid username with valid password and set of roles and stubbing the following methods: 
-     * 		UserServiceImpl# validateUsername(username),UserServiceImpl# validatePassword(password), IUserrepository# findUserByUsername(username)
+     * 		UserServiceImpl# validateUsername(username),UserServiceImpl# validatePassword(password), 
+     * 		IUserrepository# findUserByUsername(username)
      * expectation: verifying if AddUserException is thrown 
      */
     @Test
@@ -160,8 +162,10 @@ public class UserServiceImplUnitTest
         verify(userRepository).findUserByUsername(username);
     }
 
-    /*
+    /**
      * Scenario: empty username as input
+     * input: blank username
+     * expectation: verifying if InvalidUsernameException is thrown
      */
     @Test
     public void testValidateUserName_1() {
@@ -170,8 +174,10 @@ public class UserServiceImplUnitTest
         assertThrows(InvalidUsernameException.class, executable);
     }
 
-    /*
+    /**
      * Scenario: null username as input
+     *  input: null username
+     * expectation: verifying if InvalidUsernameException is thrown
      */
     @Test
     public void testValidateUserName_2() {
@@ -180,8 +186,10 @@ public class UserServiceImplUnitTest
         assertThrows(InvalidUsernameException.class, executable);
     }
 
-    /*
+    /**
      * Scenario: valid username as input
+     * input: valid username
+     * expectation: successful execution of validateUsername(username) method
      */
     @Test
     public void testValidateUserName_3() {
@@ -189,8 +197,10 @@ public class UserServiceImplUnitTest
         userService.validateUsername(username);
     }
 
-    /*
-     * Scenario: empty password as input
+    /**
+     * Scenario: blank password as input
+     * input: blank password
+     * expectation: verifying if InvalidPasswordException is thrown
      */
     @Test
     public void testValidatePassword_1() {
@@ -199,8 +209,10 @@ public class UserServiceImplUnitTest
         assertThrows(InvalidPasswordException.class, executable);
     }
 
-    /*
+    /**
      * Scenario: null password as input
+     * input: null password
+     * expectation: verifying if InvalidPasswordException is thrown
      */
     @Test
     public void testValidatePassword_2() {
@@ -209,8 +221,10 @@ public class UserServiceImplUnitTest
         assertThrows(InvalidPasswordException.class, executable);
     }
 
-    /*
+    /**
      * Scenario: valid password as input
+     * input: valid password
+     * expectation: successful execution of validatePassword(password) method
      */
     @Test
     public void testValidatePassword_3() {

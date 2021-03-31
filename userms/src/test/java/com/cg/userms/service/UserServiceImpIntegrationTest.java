@@ -36,7 +36,7 @@ public class UserServiceImpIntegrationTest
     @Autowired
     EntityManager entityManager;
 
-    /*
+    /**
      * Scenario: user added successfully
      * input: valid username,valid password, valid set of roles
      * expectation: verifying if username, password and set of roles stored is the same as the one entered
@@ -61,7 +61,7 @@ public class UserServiceImpIntegrationTest
         assertEquals(roles, result.getRoles());
         assertEquals(roles, stored.getRoles());
     }
-    /*
+    /**
      * Scenario: user not added successfully because username is blank
      * input: blank username, valid password and valid set of roles
      * expectation: verifying if InvalidUsernameException is thrown
@@ -77,7 +77,7 @@ public class UserServiceImpIntegrationTest
         assertThrows(InvalidUsernameException.class, executable);
     }
 
-    /*
+    /**
      * Scenario: user not added successfully because password is blank
      * input: valid username, blank password and valid set of roles
      * expectation: verifying if InvalidPasswordException is thrown
@@ -93,7 +93,7 @@ public class UserServiceImpIntegrationTest
         assertThrows(InvalidPasswordException.class, executable);
     }
 
-    /*
+    /**
      * Scenario: User not added successfully because username is null
      * input: null username, valid password and valid set of roles
      * expectation: verifying if InvalidUsernameException is thrown
@@ -109,7 +109,7 @@ public class UserServiceImpIntegrationTest
         assertThrows(InvalidUsernameException.class, executable);
     }
 
-    /*
+    /**
      * Scenario: user not added successfully because password is null
      * input: valid username, null password and valid set of roles
      * expectation: verifying if InvalidPasswordException is thrown
@@ -125,7 +125,7 @@ public class UserServiceImpIntegrationTest
         assertThrows(InvalidPasswordException.class, executable);
     }
 
-    /*
+    /**
      * Scenario: user not added successfully because username already exists
      * input: valid username, valid password and valid set of roles
      * expectation: verifying if AddUserException is thrown
