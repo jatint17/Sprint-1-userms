@@ -2,6 +2,7 @@ package com.cg.userms.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import com.cg.userms.dto.AddRequest;
 import com.cg.userms.dto.CheckCredentialsRequest;
@@ -13,6 +14,11 @@ import com.cg.userms.util.UserUtil;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+
+@Validated
 @RestController
 public class UserController
 {
@@ -29,7 +35,7 @@ public class UserController
      */
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/a/admin/add")
-    public UserDetailsResponse addAdmin(@RequestBody AddRequest request)
+    public UserDetailsResponse addAdmin(@RequestBody @Valid AddRequest request)
     {
     	Set<String> roles = new HashSet<>();
     	roles.add("admin");
@@ -44,7 +50,7 @@ public class UserController
      * @return UserDetailsResponse
      */
     @GetMapping("/c/users/byid/{id}")
-    public UserDetailsResponse findById(@PathVariable("id") Long userId)
+    public UserDetailsResponse findById(@PathVariable("id") @Min(0) Long userId)
     {
         User user = userService.findById(userId);
         return userUtil.toUserDetails(user);
@@ -56,7 +62,7 @@ public class UserController
      * @return UserDetailsResponse
      */
     @GetMapping("/p/users/byusername/{username}")
-    public UserDetailsResponse findByUsername(@PathVariable("username") String username)
+    public UserDetailsResponse findByUsername(@PathVariable("username") @NotBlank String username)
     {
         User user = userService.findUserByUsername(username);
         return userUtil.toUserDetails(user);
@@ -68,7 +74,7 @@ public class UserController
      * @return boolean
      */
     @GetMapping("/p/users/checkcredentials")
-    public boolean checkCredentials(@RequestBody CheckCredentialsRequest request)
+    public boolean checkCredentials(@RequestBody @Valid CheckCredentialsRequest request)
     {
         return userService.checkCredentials(request.getUsername(),request.getPassword());
     }
