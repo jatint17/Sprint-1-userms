@@ -7,12 +7,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.cg.userms.dto.CustomUserDetails;
 import com.cg.userms.entity.User;
 import com.cg.userms.exceptions.*;
 import com.cg.userms.repository.IUserRepository;
-
 import java.util.Optional;
 import java.util.Set;
 

@@ -1,6 +1,10 @@
 package com.cg.userms.entity;
 
 import javax.persistence.*;
+
+import com.cg.userms.entity.User;
+
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -62,6 +66,20 @@ public class User
                 "userId=" + userId +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", roles=" + roles +
                 '}';
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(userId, user.userId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId);
     }
 }
