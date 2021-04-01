@@ -10,7 +10,7 @@ public class AddRequest
 	@NotBlank
 	@Size(min=4)
     private String password;
-
+	public AddRequest() {}
     public AddRequest(String username, String password) {
         this.username = username;
         this.password = password;

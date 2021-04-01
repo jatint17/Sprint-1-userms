@@ -10,7 +10,7 @@ public class CheckCredentialsRequest
 	@NotBlank
 	@Size(min=4)
     private String password;
-
+	public CheckCredentialsRequest() {}
     public CheckCredentialsRequest(String username, String password) {
         this.username = username;
         this.password = password;
